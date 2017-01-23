@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>postgresql2websocket</title>
+</head>
+<body>
+<pre id="journal">
+</pre>
+<script>
+var journal = document.getElementById("journal");
+ws = new WebSocket("ws://localhost/");
+ws.onmessage = function (message) {
+  var text = (new Date).toLocaleString() + ': ' + message.data;
+  journal.innerHTML = text +'\n'+journal.innerHTML;
+}
+</script>
+</body>
+</html>

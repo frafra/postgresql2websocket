@@ -1,0 +1,12 @@
+; Database connection parameters
+; https://magicstack.github.io/asyncpg/current/api/index.html
+[postgresql]
+host = localhost
+user = myusername
+password = mypassword
+database = mydatabase
+
+; Web server parameters
+[web]
+host = 0.0.0.0
+port = 8080
