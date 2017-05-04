@@ -44,3 +44,9 @@ CREATE TRIGGER mytable_notify_delete AFTER DELETE ON mytable FOR EACH ROW EXECUT
 ## How to use it?
 
 Execute `postgresql2websocket.py` and open `console.html`.
+
+## Limitations
+
+> The "payload" string to be communicated along with the notification. This must be specified as a simple string literal. In the default configuration it must be shorter than 8000 bytes. (If binary data or large amounts of information need to be communicated, it's best to put it in a database table and send the key of the record.)
+
+Source: https://www.postgresql.org/docs/current/static/sql-notify.html
