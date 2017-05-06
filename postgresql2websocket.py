@@ -30,7 +30,6 @@ async def websocket_handler(request):
             async for msg in ws:
                 pass
         finally:
-            task.cancel()
             request.app['websockets'].remove(ws)
     return ws
 
@@ -41,8 +40,6 @@ async def init_app(config):
     return app
 
 async def on_shutdown(app):
-    for task in asyncio.Task.all_tasks():
-        task.cancel()
     for ws in app['websockets']:
         await ws.close(code=WSCloseCode.GOING_AWAY,
             message='Server shutdown')
