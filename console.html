@@ -9,7 +9,7 @@
 </pre>
 <script>
 var journal = document.getElementById("journal");
-ws = new WebSocket("ws://localhost/");
+ws = new WebSocket("ws://localhost:8080/postgresql2websocket");
 ws.onmessage = function (message) {
   var text = (new Date).toLocaleString() + ': ' + message.data;
   journal.innerHTML = text +'\n'+journal.innerHTML;
