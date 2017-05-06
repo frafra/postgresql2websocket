@@ -7,15 +7,15 @@ import configparser
 import asyncpg
 from aiohttp import web, WSCloseCode
 
-def callback_queue(queue):
+def callback_websocket(ws):
     def callback(connection, pid, channel, payload):
-        asyncio.async(queue.put(message))
+        ws.send_str(payload)
     return callback
 
 async def parse(ws, queue):
     while True:
-        uid, channel, message = await queue.get()
-        ws.send_str(message)
+        uid, payload = await queue.get()
+        ws.send_str(payload)
 
 async def websocket_handler(request):
     channel = request.match_info.get('channel', 'postgresql2websocket')
@@ -25,8 +25,7 @@ async def websocket_handler(request):
     pool = request.app['pool']
     async with pool.acquire() as connection:
         queue = asyncio.Queue()
-        await connection.add_listener(channel, callback_queue(queue))
-        task = loop.create_task(parse(ws, queue))
+        await connection.add_listener(channel, callback_websocket(ws))
         try:
             async for msg in ws:
                 pass
