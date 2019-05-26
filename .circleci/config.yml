@@ -1,0 +1,42 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: python:3.6
+      - image: postgres:11
+        environment:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+    steps:
+      - checkout
+      - run: |
+          echo "deb http://deb.debian.org/debian stretch-backports main" >> /etc/apt/sources.list
+          apt-get update
+          apt-get install -y gcc python3-dev postgresql-client jq
+          apt-get -t stretch-backports install -y npm
+          pip install -r requirements.txt
+      - run: |
+          for i in $(seq 1 10)
+          do
+            pg_isready -h localhost && echo Success && exit 0
+            echo -n .
+            sleep 1
+          done
+          echo Failed waiting for Postgres && exit 1
+      - run: |
+          for f in tests/sql/setup_*.sql
+          do
+            psql postgres://test:test@localhost/test < $f
+          done
+          npm install ws
+          mv postgresql2websocket.conf{.example,}
+      - run: |
+          ./postgresql2websocket.py &> server.log &
+          sleep 1
+          node tests/websocket_client.js &> client.log &
+          sleep 1
+          psql postgres://test:test@localhost/test < tests/sql/test_upsert.sql
+          sleep 1
+          [[ $(jq -r .row.text < client.log) == "Hello world" ]]
+        

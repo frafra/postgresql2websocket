@@ -2,9 +2,9 @@
 ; https://magicstack.github.io/asyncpg/current/api/index.html
 [postgresql]
 host = localhost
-user = myusername
-password = mypassword
-database = mydatabase
+user = test
+password = test
+database = test
 
 ; Web server parameters
 [web]
