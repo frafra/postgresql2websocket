@@ -1,5 +1,7 @@
 # postgresql2websocket
 
+[![CircleCI](https://img.shields.io/circleci/build/github/frafra/postgres2websocket.svg)](https://circleci.com/gh/frafra/postgres2websocket)
+
 ## How does it work?
 
 Execute `postgresql2websocket.py` and connect to `ws://localhost:8080/channel` where `channel` is the channel name of the selected database (see [PostgreSQL documentation - NOTIFY](https://www.postgresql.org/docs/current/static/sql-notify.html)).
