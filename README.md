@@ -45,7 +45,7 @@ CREATE TRIGGER mytable_notify_delete AFTER DELETE ON mytable FOR EACH ROW EXECUT
 
 ## How to use it?
 
-Execute `postgresql2websocket.py` and open `console.html`.
+Execute `postgresql2websocket.py`, open `examples/console.html` and execute some operations on the table.
 
 ## Limitations
 
