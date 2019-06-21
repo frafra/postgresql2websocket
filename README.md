@@ -1,6 +1,6 @@
 # postgresql2websocket
 
-[![CircleCI](https://img.shields.io/circleci/build/github/frafra/postgres2websocket.svg)](https://circleci.com/gh/frafra/postgres2websocket)
+[![CircleCI](https://img.shields.io/circleci/build/github/frafra/postgresql2websocket.svg)](https://circleci.com/gh/frafra/postgresql2websocket)
 
 ## How does it work?
 
