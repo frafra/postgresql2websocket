@@ -1,4 +1,4 @@
 CREATE TABLE IF NOT EXISTS mytable (
-    uid integer PRIMARY KEY,
+    uid SERIAL PRIMARY KEY,
     text varchar(140)
 );

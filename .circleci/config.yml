@@ -78,7 +78,7 @@ jobs:
             sleep 1
             node tests/websocket_client.js &> logs/client.log &
             sleep 1
-            psql postgres://test:test@localhost/test < tests/sql/test_upsert.sql
+            psql postgres://test:test@localhost/test < tests/sql/test_insert.sql
             sleep 1
             [[ $(jq -r .row.text < logs/client.log) == "Hello world" ]]
       - store_artifacts:
