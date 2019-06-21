@@ -27,18 +27,20 @@ jobs:
             apt-get -t stretch-backports install -y npm
       - restore_cache:
           keys:
-          - v1-py-deps-{{ checksum "requirements.txt" }}
+          - v1-py-deps-{{ checksum "poetry.lock" }}
           - v1-py-deps-
       - run:
           name: Install Python dependencies
           command: |
             python -m venv venv
             . venv/bin/activate
-            pip install -r requirements.txt
+            curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+            source $HOME/.poetry/env
+            poetry install
       - save_cache:
           paths:
             - ./venv
-          key: v1-py-deps-{{ checksum "requirements.txt" }}
+          key: v1-py-deps-{{ checksum "poetry.lock" }}
       - restore_cache:
           keys:
           - v1-js-deps-{{ checksum "tests/package-lock.json" }}
