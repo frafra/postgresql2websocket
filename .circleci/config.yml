@@ -1,42 +1,91 @@
 version: 2
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-python3.5-postgres11
+      - test-python3.6-postgres11
 jobs:
-  build:
+  test-python3.5-postgres11: &test-template
     docker:
       - image: python:3.6
       - image: postgres:11
-        environment:
+        environment: &postgres-environment
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
           POSTGRES_DB: test
     steps:
       - checkout
-      - run: |
-          echo "deb http://deb.debian.org/debian stretch-backports main" >> /etc/apt/sources.list
-          apt-get update
-          apt-get install -y gcc python3-dev postgresql-client jq
-          apt-get -t stretch-backports install -y npm
-          pip install -r requirements.txt
-      - run: |
-          for i in $(seq 1 10)
-          do
-            pg_isready -h localhost && echo Success && exit 0
-            echo -n .
+      - run:
+          name: Install packages
+          command: |
+            echo "deb http://deb.debian.org/debian stretch-backports main" \
+              >> /etc/apt/sources.list
+            apt-get update
+            apt-get install -y gcc python3-dev postgresql-client jq
+            apt-get -t stretch-backports install -y npm
+      - restore_cache:
+          keys:
+          - v1-py-deps-{{ checksum "requirements.txt" }}
+          - v1-py-deps-
+      - run:
+          name: Install Python dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-py-deps-{{ checksum "requirements.txt" }}
+      - restore_cache:
+          keys:
+          - v1-js-deps-{{ checksum "tests/package-lock.json" }}
+          - v1-js-deps-
+      - run:
+          name: Install Node.js dependencies
+          command: |
+            npm install tests
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-js-deps-{{ checksum "tests/package-lock.json" }}
+      - run:
+          name: Wait for PostgreSQL
+          command: |
+            for i in $(seq 1 10)
+            do
+              pg_isready -h localhost && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for Postgres && exit 1
+      - run:
+          name: Initialize database
+          command: |
+            for f in tests/sql/setup_*.sql
+            do
+              psql postgres://test:test@localhost/test < $f
+            done
+            mv postgresql2websocket.conf{.example,}
+      - run:
+          name: Run tests
+          command: |
+            mkdir logs
+            . venv/bin/activate
+            ./postgresql2websocket.py &> logs/server.log &
             sleep 1
-          done
-          echo Failed waiting for Postgres && exit 1
-      - run: |
-          for f in tests/sql/setup_*.sql
-          do
-            psql postgres://test:test@localhost/test < $f
-          done
-          npm install ws
-          mv postgresql2websocket.conf{.example,}
-      - run: |
-          ./postgresql2websocket.py &> server.log &
-          sleep 1
-          node tests/websocket_client.js &> client.log &
-          sleep 1
-          psql postgres://test:test@localhost/test < tests/sql/test_upsert.sql
-          sleep 1
-          [[ $(jq -r .row.text < client.log) == "Hello world" ]]
-        
+            node tests/websocket_client.js &> logs/client.log &
+            sleep 1
+            psql postgres://test:test@localhost/test < tests/sql/test_upsert.sql
+            sleep 1
+            [[ $(jq -r .row.text < logs/client.log) == "Hello world" ]]
+      - store_artifacts:
+          path: logs
+  test-python3.6-postgres11:
+    <<: *test-template
+    docker:
+      - image: python:3.6
+      - image: postgres:11
+        environment:
+          <<: *postgres-environment
