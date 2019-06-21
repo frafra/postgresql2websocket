@@ -12,11 +12,6 @@ def callback_websocket(ws):
         ws.send_str(payload)
     return callback
 
-async def parse(ws, queue):
-    while True:
-        uid, payload = await queue.get()
-        ws.send_str(payload)
-
 async def websocket_handler(request):
     channel = request.match_info.get('channel', 'postgresql2websocket')
     ws = web.WebSocketResponse()
@@ -24,7 +19,6 @@ async def websocket_handler(request):
     request.app['websockets'].append(ws)
     pool = request.app['pool']
     async with pool.acquire() as connection:
-        queue = asyncio.Queue()
         await connection.add_listener(channel, callback_websocket(ws))
         try:
             async for msg in ws:
