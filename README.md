@@ -13,8 +13,9 @@ Copy `postgresql2websocket.conf.example` as `postgresql2websocket.conf` and chan
 ## What technologies are you using?
 
 * [PostgreSQL](https://www.postgresql.org/)
-* [Python](https://www.python.org/) (3.5 or greater)
+* [Python](https://www.python.org/) (3.5.3 or greater)
 * [aiohttp](http://aiohttp.readthedocs.io/) + [asyncpg](https://github.com/MagicStack/asyncpg)
+* [Poetry](https://poetry.eustace.io/) for dependency management
 
 ## What can I do with it?
 
