@@ -9,7 +9,7 @@ from aiohttp import web, WSCloseCode
 
 def callback_websocket(ws):
     def callback(connection, pid, channel, payload):
-        ws.send_str(payload)
+        asyncio.ensure_future(ws.send_str(payload))
     return callback
 
 async def websocket_handler(request):
@@ -55,6 +55,8 @@ def main(filename = 'postgresql2websocket.conf'):
     except KeyboardInterrupt:
         pass
     finally:
+        for task in asyncio.Task.all_tasks():
+            task.cancel()
         loop.close()
 
 if __name__ == '__main__':
