@@ -8,7 +8,7 @@ license = "GPL-3.0"
 [tool.poetry.dependencies]
 python = "^3.5.3"
 asyncpg = "^0.18.3"
-aiohttp = "^3.5"
+aiohttp = "^3.6"
 
 [tool.poetry.dev-dependencies]
 
