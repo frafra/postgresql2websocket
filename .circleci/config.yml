@@ -23,8 +23,8 @@ jobs:
             echo "deb http://deb.debian.org/debian stretch-backports main" \
               >> /etc/apt/sources.list
             apt-get update
-            apt-get install -y gcc python3-dev postgresql-client jq
-            apt-get -t stretch-backports install -y nodejs npm
+            apt-get install -y gcc python3-dev postgresql-client jq nodejs
+            apt-get -t stretch-backports install -y npm
       - restore_cache:
           keys:
           - v1-py-deps-{{ checksum "poetry.lock" }}
