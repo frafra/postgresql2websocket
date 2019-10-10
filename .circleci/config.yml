@@ -6,6 +6,7 @@ workflows:
       - test-python3.5-postgres11
       - test-python3.6-postgres11
       - test-python3.7-postgres11
+      - test-python3.7-postgres12
 jobs:
   test-python3.5-postgres11: &test-template
     docker:
@@ -94,5 +95,12 @@ jobs:
     docker:
       - image: python:3.7
       - image: postgres:11
+        environment:
+          <<: *postgres-environment
+  test-python3.7-postgres12:
+    <<: *test-template
+    docker:
+      - image: python:3.7
+      - image: postgres:12
         environment:
           <<: *postgres-environment
