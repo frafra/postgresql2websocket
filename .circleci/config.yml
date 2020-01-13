@@ -3,15 +3,15 @@ workflows:
   version: 2
   test:
     jobs:
-      - test-python3.5-postgres11
-      - test-python3.6-postgres11
+      - test-python3.5-postgres9
+      - test-python3.6-postgres10
       - test-python3.7-postgres11
-      - test-python3.7-postgres12
+      - test-python3.8-postgres12
 jobs:
-  test-python3.5-postgres11: &test-template
+  test-python3.5-postgres9: &test-template
     docker:
-      - image: python:3.6
-      - image: postgres:11
+      - image: python:3.5
+      - image: postgres:9
         environment: &postgres-environment
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
@@ -83,11 +83,11 @@ jobs:
             [[ $(jq -r .row.text < logs/client.log) == "Hello world" ]]
       - store_artifacts:
           path: logs
-  test-python3.6-postgres11:
+  test-python3.6-postgres10:
     <<: *test-template
     docker:
       - image: python:3.6
-      - image: postgres:11
+      - image: postgres:10
         environment:
           <<: *postgres-environment
   test-python3.7-postgres11:
@@ -97,10 +97,10 @@ jobs:
       - image: postgres:11
         environment:
           <<: *postgres-environment
-  test-python3.7-postgres12:
+  test-python3.8-postgres12:
     <<: *test-template
     docker:
-      - image: python:3.7
+      - image: python:3.8
       - image: postgres:12
         environment:
           <<: *postgres-environment
