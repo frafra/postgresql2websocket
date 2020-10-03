@@ -22,7 +22,9 @@ async def websocket_handler(request):
         await connection.add_listener(channel, callback_websocket(ws))
         try:
             async for msg in ws:
-                pass
+                async with connection.transaction():
+                    async for record in connection.cursor(msg.data):
+                        asyncio.ensure_future(ws.send_json(dict(record)))
         finally:
             request.app['websockets'].remove(ws)
     return ws
