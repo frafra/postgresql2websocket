@@ -44,6 +44,21 @@ CREATE TRIGGER mytable_notify_insert AFTER INSERT ON mytable FOR EACH ROW EXECUT
 CREATE TRIGGER mytable_notify_delete AFTER DELETE ON mytable FOR EACH ROW EXECUTE PROCEDURE table_update_notify();
 ```
 
+## Bidirectional communication
+
+The websocket channel can be used to execute remote functions too:
+
+For example:
+```
+CREATE FUNCTION add(integer, integer) RETURNS integer
+    AS 'select $1 + $2;'
+    LANGUAGE SQL
+    IMMUTABLE
+    RETURNS NULL ON NULL INPUT;
+```
+
+Executing `ws.send('select add(1, 2);')` will return a JSON response containing `{"add": 3}`.
+
 ## How to use it?
 
 Execute `postgresql2websocket.py`, open `examples/console.html` and execute some operations on the table.
